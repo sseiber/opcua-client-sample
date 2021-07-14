@@ -8,7 +8,7 @@ import {
     ClientSubscription,
     DataValue,
     MonitoringParametersOptions,
-    ReadValueIdLike,
+    ReadValueIdOptions,
     TimestampsToReturn,
     DataType,
     WriteValueOptions,
@@ -42,7 +42,7 @@ export class IotcOpcuaClient {
             },
             securityMode: MessageSecurityMode.None,
             securityPolicy: SecurityPolicy.None,
-            endpoint_must_exist: false
+            endpointMustExist: false
         };
 
         this.client = OPCUAClient.create(options);
@@ -92,10 +92,10 @@ export class IotcOpcuaClient {
             }
         };
 
-        const status = await this.session.write(writeOptions);
+        await this.session.write(writeOptions);
     }
 
-    public async createSubscription(): Promise<void> {
+    public async createSubscription(idsToWatch: number[]): Promise<void> {
         const subscription = ClientSubscription.create(this.session, {
             requestedPublishingInterval: 1000,
             requestedLifetimeCount: 10 * 60 * 10,
@@ -116,14 +116,9 @@ export class IotcOpcuaClient {
                 this.log(['IotcOpcuaClient', 'info'], `terminated`);
             });
 
-        const ids = [
-            1001,
-            1002
-        ];
-
-        for (const id of ids) {
+        for (const id of idsToWatch) {
             const nodeId = new NodeId(NodeIdType.NUMERIC, id, 1);
-            const itemToMonitor: ReadValueIdLike = {
+            const itemToMonitor: ReadValueIdOptions = {
                 nodeId,
                 attributeId: AttributeIds.Value
             };
@@ -148,7 +143,7 @@ export class IotcOpcuaClient {
 
         await new Promise((resolve) => {
             setTimeout(() => {
-                return resolve();
+                return resolve('');
             }, 15 * 1000);
         });
 

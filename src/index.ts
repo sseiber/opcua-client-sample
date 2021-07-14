@@ -12,13 +12,14 @@ async function start() {
 
         await client.createSession();
 
+        // @ts-ignore
         const result = await client.browseServer();
 
-        idsToWatch = [
+        const idsToWatch = [
             1001,
             1002
         ];
-        await client.createSubscription();
+        await client.createSubscription(idsToWatch);
     }
     catch (ex) {
         // tslint:disable-next-line:no-console
